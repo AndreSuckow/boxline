@@ -99,7 +99,10 @@ await page.locator("#engenharia").scrollIntoViewIfNeeded();
 await expect(page.locator(".exploded-art canvas")).toBeVisible();
 await page.waitForTimeout(1000);
 await page.screenshot({ path: "test-results/layers.png" });
-const response = await page.goto("http://127.0.0.1:3000/pagina-inexistente");
+const response = await page.goto("http://127.0.0.1:3000/pagina-inexistente", {
+  timeout: 60000,
+  waitUntil: "domcontentloaded",
+});
 expect(response.status()).toBe(404);
 await expect(
   page.getByRole("link", { name: "Voltar ao início" }),

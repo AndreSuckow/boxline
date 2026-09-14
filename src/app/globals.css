@@ -1534,17 +1534,7 @@ p {
   font-size: 24px;
   letter-spacing: -0.7px;
 }
-.carousel-control {
-  background: transparent;
-  border: 1px solid var(--line);
-  padding: 9px 14px;
-  border-radius: 4px;
-  font-size: 11px;
-  white-space: nowrap;
-}
-.carousel-control:hover {
-  border-color: var(--green);
-}
+
 .company-marquee {
   overflow: hidden;
   margin-top: 25px;
@@ -1585,10 +1575,7 @@ p {
   color: var(--muted);
   margin-top: 10px;
 }
-.company-marquee:hover .company-track,
-.company-marquee.is-paused .company-track {
-  animation-play-state: paused;
-}
+
 @keyframes company-scroll {
   to {
     transform: translateX(-50%);
@@ -1853,4 +1840,116 @@ p {
 .company-marquee:focus-visible {
   outline: 2px solid var(--green);
   outline-offset: 4px;
+}
+
+.correios-print {
+  background: #333946;
+  mask: url("/brands/correios.svg") center / contain no-repeat;
+  height: 30px;
+  width: 110px;
+  position: absolute;
+  top: 18px;
+  left: 15px;
+  padding: 0 !important;
+}
+.quote-items {
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin: 24px 0;
+}
+.quote-items-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.quote-items-heading span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.quote-item-list {
+  display: grid;
+  gap: 8px;
+}
+.quote-item-list button {
+  text-align: left;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  min-width: 0;
+}
+.quote-item-list button[aria-pressed="true"] {
+  border-color: var(--green);
+  background: #4a583f0c;
+}
+.quote-item-list button > span {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+.quote-item-list button b {
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.quote-item-list button small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.quote-current-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.quote-current-heading h4 {
+  font-size: 13px;
+  font-weight: 500;
+}
+.remove-quote-item {
+  border: 0;
+  background: transparent;
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+}
+.remove-quote-item:hover {
+  color: var(--error);
+}
+.add-quote-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  margin: 15px 0;
+  border: 1px dashed var(--green);
+  border-radius: 4px;
+  color: var(--green);
+  background: transparent;
+  font-size: 12px;
+}
+.add-quote-item:hover {
+  background: #4a583f0c;
+}
+@media (max-width: 480px) {
+  .quote-current-heading {
+    align-items: flex-start;
+  }
+  .quote-item-list button > span {
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
 }

@@ -14,10 +14,9 @@ await page.goto(process.env.SITE_URL || "http://127.0.0.1:3000", {
 await expect(page.locator(".company-list").first().locator("li")).toHaveCount(
   6,
 );
-await page.getByRole("button", { name: "Pausar faixa" }).click();
 await expect(
-  page.getByRole("button", { name: "Continuar faixa" }),
-).toHaveAttribute("aria-pressed", "true");
+  page.getByRole("button", { name: /Pausar faixa|Continuar faixa/ }),
+).toHaveCount(0);
 await page.locator("#correios").scrollIntoViewIfNeeded();
 await expect(page.locator(".postal-card")).toHaveCount(4);
 await page.screenshot({ path: "test-results/postal.png" });
@@ -59,5 +58,5 @@ expect(
 expect(errors).toEqual([]);
 await browser.close();
 console.log(
-  "PASS: companies, carousel pause, four postal sizes, quote handoff, live 3D dimensions, focus, accessibility and mobile.",
+  "PASS: companies, continuous carousel, four postal sizes, quote handoff, live 3D dimensions, focus, accessibility and mobile.",
 );

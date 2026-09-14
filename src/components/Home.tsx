@@ -79,7 +79,21 @@ const questions = [
 export default function Home() {
   const root = useRef<HTMLElement>(null);
   const [menu, setMenu] = useState(false);
-  const [fields, setFields] = useState<Fields>(initial);
+  const [items, setItems] = useState<(Fields & { id: number })[]>([
+    { ...initial, id: 1 },
+  ]);
+  const [activeItem, setActiveItem] = useState(1);
+  const itemSequence = useRef(1);
+  const pendingFocus = useRef<string | null>(null);
+  const carouselTween = useRef<gsap.core.Tween | null>(null);
+  const fields = items.find((item) => item.id === activeItem)!;
+  function setFields(update: (previous: Fields) => Fields) {
+    setItems((previous) =>
+      previous.map((item) =>
+        item.id === activeItem ? { ...update(item), id: item.id } : item,
+      ),
+    );
+  }
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>(
     {},
   );
@@ -88,7 +102,7 @@ export default function Home() {
   const [activeDimension, setActiveDimension] = useState<
     "length" | "width" | "height"
   >("length");
-  const [carouselPaused, setCarouselPaused] = useState(false);
+
   const [faq, setFaq] = useState<number | null>(null);
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -139,6 +153,87 @@ export default function Home() {
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, [menu]);
+  useEffect(() => {
+    if (pendingFocus.current) {
+      document.getElementById(pendingFocus.current)?.focus();
+      pendingFocus.current = null;
+    }
+  }, [activeItem, errors]);
+  useEffect(
+    () => () => {
+      carouselTween.current?.kill();
+    },
+    [],
+  );
+  function carouselSpeed(element: HTMLElement, rate: number) {
+    const animation = element
+      .querySelector(".company-track")
+      ?.getAnimations()[0];
+    if (!animation) return;
+    carouselTween.current?.kill();
+    carouselTween.current = gsap.to(animation, {
+      playbackRate: rate,
+      duration: 0.65,
+      ease: "power2.out",
+    });
+  }
+  function chooseItem(id: number) {
+    setActiveItem(id);
+    setErrors({});
+  }
+  function addItem() {
+    const id = ++itemSequence.current;
+    setItems((previous) => [
+      ...previous,
+      {
+        ...initial,
+        id,
+        length: "",
+        width: "",
+        height: "",
+        quantity: "",
+        product: "Sob medida",
+        purpose: "",
+      },
+    ]);
+    pendingFocus.current = "length";
+    setActiveItem(id);
+    setErrors({});
+    setHandoff("");
+    setStatus("");
+  }
+  function removeItem() {
+    if (items.length === 1) return;
+    const index = items.findIndex((item) => item.id === activeItem);
+    const remaining = items.filter((item) => item.id !== activeItem);
+    const next = remaining[Math.min(index, remaining.length - 1)];
+    setItems(remaining);
+    setActiveItem(next.id);
+    pendingFocus.current = "quote-item-" + next.id;
+    setErrors({});
+    setHandoff("");
+    setStatus("");
+  }
+  function validate(item: Fields) {
+    const next: Partial<Record<keyof Fields, string>> = {};
+    (["length", "width", "height", "quantity"] as const).forEach((key) => {
+      const n = Number(item[key]);
+      if (
+        !Number.isFinite(n) ||
+        n < (key === "quantity" ? 1 : 0.1) ||
+        n > (key === "quantity" ? 10000000 : 300)
+      ) {
+        next[key] =
+          key === "quantity"
+            ? "Informe de 1 a 10.000.000 unidades."
+            : "Informe de 0,1 a 300 cm.";
+      } else if (key === "quantity" && !Number.isInteger(n))
+        next[key] = "Informe uma quantidade inteira.";
+    });
+    if (!item.purpose.trim())
+      next.purpose = "Conte qual produto será embalado.";
+    return next;
+  }
   function change(key: keyof Fields, value: string) {
     setFields((old) => ({ ...old, [key]: value }));
     setErrors((old) => ({ ...old, [key]: undefined }));
@@ -184,44 +279,44 @@ export default function Home() {
   }
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const next: Partial<Record<keyof Fields, string>> = {};
-    (["length", "width", "height", "quantity"] as const).forEach((key) => {
-      const n = Number(fields[key]);
-      if (
-        !Number.isFinite(n) ||
-        n < (key === "quantity" ? 1 : 0.1) ||
-        n > (key === "quantity" ? 10000000 : 300)
-      )
-        next[key] =
-          key === "quantity"
-            ? "Informe de 1 a 10.000.000 unidades."
-            : "Informe de 0,1 a 300 cm.";
-      else if (key === "quantity" && !Number.isInteger(n))
-        next[key] = "Informe uma quantidade inteira.";
-    });
-    if (!fields.purpose.trim())
-      next.purpose = "Conte qual produto será embalado.";
-    setErrors(next);
-    if (Object.keys(next).length) {
-      document.getElementById(Object.keys(next)[0])?.focus();
-      setStatus("Revise os campos indicados para preparar seu orçamento.");
-      return;
+    for (const [index, item] of items.entries()) {
+      const next = validate(item);
+      if (Object.keys(next).length) {
+        pendingFocus.current = Object.keys(next)[0];
+        setActiveItem(item.id);
+        setErrors(next);
+        setHandoff("");
+        setStatus(
+          "Revise os campos do tipo " +
+            (index + 1) +
+            " antes de enviar o orçamento.",
+        );
+        return;
+      }
     }
+    setErrors({});
     const message =
       "Olá, " +
       business.name +
-      "! Gostaria de solicitar um orçamento de caixas de papelão.\n\nModelo: " +
-      fields.product +
-      "\nMedidas (C × L × A): " +
-      fields.length +
-      " × " +
-      fields.width +
-      " × " +
-      fields.height +
-      " cm\nQuantidade: " +
-      Number(fields.quantity).toLocaleString("pt-BR") +
-      " unidades\nFinalidade: " +
-      fields.purpose.trim();
+      "! Gostaria de solicitar um orçamento de caixas de papelão.\n\n" +
+      items
+        .map(
+          (item, index) =>
+            (items.length > 1 ? "TIPO " + (index + 1) + "\n" : "") +
+            "Modelo: " +
+            item.product +
+            "\nMedidas (C × L × A): " +
+            item.length +
+            " × " +
+            item.width +
+            " × " +
+            item.height +
+            " cm\nQuantidade: " +
+            Number(item.quantity).toLocaleString("pt-BR") +
+            " unidades\nFinalidade: " +
+            item.purpose.trim(),
+        )
+        .join("\n\n");
     const url = whatsappUrl(message);
     setHandoff(url);
     window.open(url, "_blank", "noopener,noreferrer");
@@ -351,20 +446,16 @@ export default function Home() {
             <p className="eyebrow">BOAS PARCERIAS. BOAS ENTREGAS.</p>
             <h2 id="companies-title">Quem confia na Boxline.</h2>
           </div>
-          <button
-            className="carousel-control"
-            type="button"
-            onClick={() => setCarouselPaused(!carouselPaused)}
-            aria-pressed={carouselPaused}
-          >
-            {carouselPaused ? "Continuar faixa" : "Pausar faixa"}
-          </button>
         </div>
         <div
           tabIndex={0}
           role="region"
           aria-label="Empresas parceiras"
-          className={"company-marquee" + (carouselPaused ? " is-paused" : "")}
+          className="company-marquee"
+          onPointerEnter={(e) => {
+            if (e.pointerType === "mouse") carouselSpeed(e.currentTarget, 0.25);
+          }}
+          onPointerLeave={(e) => carouselSpeed(e.currentTarget, 1)}
         >
           <div className="company-track">
             {[0, 1].map((copy) => (
@@ -546,7 +637,15 @@ export default function Home() {
             <article className="postal-card reveal" key={p.name}>
               <div className={"postal-art postal-size-" + i} aria-hidden="true">
                 <div className="postal-box">
-                  <span>boxline</span>
+                  <span
+                    className="correios-print"
+                    style={{
+                      maskImage:
+                        "url(" +
+                        (process.env.NEXT_PUBLIC_BASE_PATH || "") +
+                        "/brands/correios.svg)",
+                    }}
+                  />
                   <i />
                   <b />
                 </div>
@@ -672,7 +771,66 @@ export default function Home() {
         <form noValidate onSubmit={submit} className="quote-form">
           <div className="form-heading">
             <h3>Vamos dimensionar sua ideia.</h3>
-            <p>Informe as medidas internas da caixa, em centímetros.</p>
+            <p>
+              Informe as medidas internas da caixa, em centímetros. Precisa de
+              modelos diferentes? Adicione cada tipo ao mesmo pedido.
+            </p>
+          </div>
+          <div
+            className="quote-items"
+            aria-label="Tipos de caixas no orçamento"
+          >
+            <div className="quote-items-heading">
+              <strong>
+                {items.length}{" "}
+                {items.length === 1 ? "tipo de caixa" : "tipos de caixas"}
+              </strong>
+              <span>Um único orçamento</span>
+            </div>
+            <div className="quote-item-list">
+              {items.map((item, index) => (
+                <button
+                  type="button"
+                  id={"quote-item-" + item.id}
+                  key={item.id}
+                  aria-pressed={activeItem === item.id}
+                  onClick={() => chooseItem(item.id)}
+                >
+                  <span>
+                    Tipo {index + 1} <b>{item.product}</b>
+                  </span>
+                  <small>
+                    {item.length && item.width && item.height
+                      ? item.length +
+                        " × " +
+                        item.width +
+                        " × " +
+                        item.height +
+                        " cm"
+                      : "Preencha as medidas"}{" "}
+                    ·{" "}
+                    {item.quantity
+                      ? Number(item.quantity).toLocaleString("pt-BR") + " un."
+                      : "Quantidade a definir"}
+                  </small>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="quote-current-heading">
+            <h4>
+              Tipo {items.findIndex((item) => item.id === activeItem) + 1}:{" "}
+              {fields.product}
+            </h4>
+            {items.length > 1 && (
+              <button
+                type="button"
+                className="remove-quote-item"
+                onClick={removeItem}
+              >
+                Remover este tipo <X size={14} />
+              </button>
+            )}
           </div>
           <div className="dimensions">
             {(["length", "width", "height"] as const).map((key) => (
@@ -752,12 +910,17 @@ export default function Home() {
               {errors.purpose}
             </p>
           </div>
+          <button className="add-quote-item" type="button" onClick={addItem}>
+            <Plus size={18} />
+            Adicionar outro tipo de caixa
+          </button>
           <button className="button form-submit" type="submit">
             <MessageCircle size={19} />
             Solicitar orçamento <ArrowUpRight size={18} />
           </button>
           <p className="form-note">
-            Você será direcionado ao WhatsApp com os detalhes preenchidos.
+            Todos os tipos de caixas serão enviados juntos na mesma mensagem do
+            WhatsApp.
           </p>
           <div role="status" className="form-status">
             {status}
