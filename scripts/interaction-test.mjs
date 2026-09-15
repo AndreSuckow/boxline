@@ -4,6 +4,7 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 await page.goto(process.env.SITE_URL || "http://127.0.0.1:3000", {
   waitUntil: "networkidle",
 });
+await page.locator(".hero-scene-loader").hover({ position: { x: 40, y: 40 } });
 await expect(page.locator(".hero-art .is-ready")).toBeVisible();
 const hero = page.locator(".hero-art canvas");
 const initial = await hero.screenshot();

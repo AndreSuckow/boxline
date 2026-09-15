@@ -106,10 +106,6 @@ export default function Home() {
   const [faq, setFaq] = useState<number | null>(null);
   const [hero3d, setHero3d] = useState(false);
   useEffect(() => {
-    if (window.innerWidth > 700) {
-      setHero3d(true);
-      return;
-    }
     const timer = window.setTimeout(() => setHero3d(true), 8000);
     return () => window.clearTimeout(timer);
   }, []);

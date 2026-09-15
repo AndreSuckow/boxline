@@ -17,6 +17,7 @@ await page.goto("http://127.0.0.1:3000", { waitUntil: "networkidle" });
 await expect(page.getByRole("heading", { level: 1 })).toContainText(
   "Proteção começa",
 );
+await page.locator(".hero-scene-loader").hover({ position: { x: 40, y: 40 } });
 await expect(page.locator(".hero-art canvas")).toBeVisible();
 await page.screenshot({ path: "test-results/desktop.png", fullPage: true });
 await page.getByRole("button", { name: "Orçar este modelo" }).nth(1).click();
