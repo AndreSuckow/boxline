@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Boxline
+name: Boxlyne
 description: Uma apresentação industrial do papelão, da estrutura ao orçamento.
 colors:
   primary: "#282b25"
@@ -31,7 +31,7 @@ components:
     rounded: "4px"
 ---
 
-# Boxline Design System
+# Boxlyne Design System
 
 ## Overview
 
@@ -75,3 +75,7 @@ Movimento: entrada breve, rolagem revelando estrutura e rotação completa em to
 Faixa contínua de parceiros com nomes provisórios mantidos em business.ts, movimento contínuo que desacelera a 25% sob o mouse, sem parar, e versão estática com reduced motion. A seção de postagem apresenta quatro opções iniciais de medidas e preenche o orçamento. Não representa vínculo oficial com os Correios. C × L × A usa uma caixa Three.js com cotas projetadas, proporções ligadas aos valores internos do formulário e destaque por clique ou foco no campo. O corte estrutural ajusta a câmera aos oito extremos da geometria, com margem em toda proporção de tela. Publicação estática em /boxline pelo GitHub Pages; o desenvolvimento local mantém a raiz.
 
 Orçamento com vários tipos: um editor para o modelo selecionado, lista de resumos com valores preservados, adicionar e remover por botão. Validar todos os itens e abrir o primeiro erro; reunir cada modelo, medida, quantidade e finalidade em uma mensagem. A ilustração de postagem usa a marca Correios em uma cor, como a referência.
+
+Desempenho: preservar toda rotação, camadas por scroll, faixa contínua e orçamento múltiplo. Carregar WebGL inferior por proximidade; renderizar a caixa somente quando houver movimento, scroll ou resize. Fontes WOFF2 locais Manrope e DM Sans com métricas de fallback ajustadas; títulos já visíveis no HTML inicial. Revelações, contadores e velocidade da faixa usam APIs nativas. A marca é Boxlyne; /boxline permanece como endereço de publicação.
+
+Textura kraft pré-calculada em WebP sem perdas, preservando o ruído original. Compilar os materiais em etapa separada e usar compileAsync. Fontes com font-display optional evitam troca tardia; no título inicial do celular, usar a métrica estável da fonte de sistema para manter a pintura imediata. Detalhes gráficos de tamanho fixo fora da tela usam content-visibility auto.

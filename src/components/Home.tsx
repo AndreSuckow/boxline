@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import ViewportScene from "./ViewportScene";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -17,8 +18,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 import { business, whatsappUrl } from "@/config/business";
 const BoxScene = dynamic(() => import("./BoxScene"), {
   ssr: false,
@@ -27,7 +27,7 @@ const BoxScene = dynamic(() => import("./BoxScene"), {
       <div className="scene-fallback">
         <div className="mini-box">
           <i />
-          <b>boxline</b>
+          <b>boxlyne</b>
         </div>
       </div>
     </div>
@@ -85,7 +85,7 @@ export default function Home() {
   const [activeItem, setActiveItem] = useState(1);
   const itemSequence = useRef(1);
   const pendingFocus = useRef<string | null>(null);
-  const carouselTween = useRef<gsap.core.Tween | null>(null);
+  const carouselFrame = useRef(0);
   const fields = items.find((item) => item.id === activeItem)!;
   function setFields(update: (previous: Fields) => Fields) {
     setItems((previous) =>
@@ -104,43 +104,56 @@ export default function Home() {
   >("length");
 
   const [faq, setFaq] = useState<number | null>(null);
+  const [hero3d, setHero3d] = useState(false);
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      const context = gsap.context(() => {
-        gsap.from(".hero-copy > *", {
-          y: 24,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.11,
-          ease: "power2.out",
-        });
-        gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) =>
-          gsap.from(el, {
-            y: 35,
-            opacity: 0,
-            duration: 0.8,
-            scrollTrigger: { trigger: el, start: "top 92%", once: true },
-          }),
-        );
-        gsap.utils.toArray<HTMLElement>("[data-count]").forEach((el) => {
-          const counter = { value: 0 };
-          gsap.to(counter, {
-            value: Number(el.dataset.count),
-            duration: 1.6,
-            scrollTrigger: { trigger: el, start: "top 95%", once: true },
-            onUpdate: () => {
-              el.textContent = Math.round(counter.value).toLocaleString(
-                "pt-BR",
+    if (window.innerWidth > 700) {
+      setHero3d(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setHero3d(true), 8000);
+    return () => window.clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const counters = new Set<number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          el.classList.remove("reveal-pending");
+          observer.unobserve(el);
+          if (el.dataset.count) {
+            const value = Number(el.dataset.count);
+            const start = performance.now();
+            const format = new Intl.NumberFormat("pt-BR");
+            const tick = (now: number) => {
+              const progress = Math.min((now - start) / 1200, 1);
+              el.textContent = format.format(
+                Math.round(value * (1 - Math.pow(1 - progress, 3))),
               );
-            },
-          });
+              if (progress < 1) {
+                const id = requestAnimationFrame(tick);
+                counters.add(id);
+              }
+            };
+            const id = requestAnimationFrame(tick);
+            counters.add(id);
+          }
         });
-      }, root);
-      return () => context.revert();
-    });
-    return () => media.revert();
+      },
+      { rootMargin: "0px 0px 60px 0px" },
+    );
+    root.current
+      ?.querySelectorAll<HTMLElement>(".reveal, [data-count]")
+      .forEach((el) => {
+        if (el.classList.contains("reveal")) el.classList.add("reveal-pending");
+        observer.observe(el);
+      });
+    return () => {
+      observer.disconnect();
+      counters.forEach(cancelAnimationFrame);
+    };
   }, []);
   useEffect(() => {
     if (!menu) return;
@@ -159,23 +172,23 @@ export default function Home() {
       pendingFocus.current = null;
     }
   }, [activeItem, errors]);
-  useEffect(
-    () => () => {
-      carouselTween.current?.kill();
-    },
-    [],
-  );
+  useEffect(() => () => cancelAnimationFrame(carouselFrame.current), []);
   function carouselSpeed(element: HTMLElement, rate: number) {
     const animation = element
       .querySelector(".company-track")
       ?.getAnimations()[0];
     if (!animation) return;
-    carouselTween.current?.kill();
-    carouselTween.current = gsap.to(animation, {
-      playbackRate: rate,
-      duration: 0.65,
-      ease: "power2.out",
-    });
+    cancelAnimationFrame(carouselFrame.current);
+    const startRate = animation.playbackRate;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / 650, 1);
+      animation.updatePlaybackRate(
+        startRate + (rate - startRate) * (1 - Math.pow(1 - progress, 3)),
+      );
+      if (progress < 1) carouselFrame.current = requestAnimationFrame(tick);
+    };
+    carouselFrame.current = requestAnimationFrame(tick);
   }
   function chooseItem(id: number) {
     setActiveItem(id);
@@ -331,7 +344,7 @@ export default function Home() {
         Pular para o conteúdo
       </a>
       <header className="header">
-        <Link href="/" className="logo" aria-label="Boxline, início">
+        <Link href="/" className="logo" aria-label="Boxlyne, início">
           <Box strokeWidth={1.6} />
           {business.name.toLowerCase()}
           <span className="logo-dot">.</span>
@@ -354,7 +367,7 @@ export default function Home() {
           {[
             ["engenharia", "A caixa por dentro"],
             ["produtos", "Nossas caixas"],
-            ["sobre", "Sobre a Boxline"],
+            ["sobre", "Sobre a Boxlyne"],
           ].map(([id, label]) => (
             <a key={id} href={"#" + id} onClick={() => setMenu(false)}>
               {label}
@@ -403,7 +416,24 @@ export default function Home() {
           <span className="art-label">
             PAPELÃO ONDULADO / PRECISÃO EM CADA DOBRA
           </span>
-          <BoxScene />
+          <div
+            className="hero-scene-loader"
+            onPointerEnter={() => setHero3d(true)}
+            onPointerDown={() => setHero3d(true)}
+          >
+            {hero3d ? (
+              <BoxScene />
+            ) : (
+              <div className="box-scene">
+                <div className="scene-fallback">
+                  <div className="mini-box">
+                    <i />
+                    <b>boxlyne</b>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="material-label">
             <span className="material-dot" />
             Estrutura inteligente.
@@ -444,7 +474,7 @@ export default function Home() {
         <div className="company-heading">
           <div>
             <p className="eyebrow">BOAS PARCERIAS. BOAS ENTREGAS.</p>
-            <h2 id="companies-title">Quem confia na Boxline.</h2>
+            <h2 id="companies-title">Quem confia na Boxlyne.</h2>
           </div>
         </div>
         <div
@@ -495,7 +525,9 @@ export default function Home() {
         <div className="engineering-scroll">
           <div className="engineering-grid">
             <div className="exploded-art">
-              <BoxScene exploded />
+              <ViewportScene>
+                <BoxScene exploded />
+              </ViewportScene>
               <span className="technical-caption">
                 CORTE ESTRUTURAL / PAPELÃO ONDULADO
               </span>
@@ -675,7 +707,7 @@ export default function Home() {
       </section>
       <section className="capacity section" id="sobre">
         <div className="capacity-copy reveal">
-          <p className="eyebrow">BOXLINE. DO PROJETO À ENTREGA.</p>
+          <p className="eyebrow">BOXLYNE. DO PROJETO À ENTREGA.</p>
           <h2>
             Seu produto merece cuidado.
             <br />
@@ -702,7 +734,7 @@ export default function Home() {
         </div>
         {business.demo && (
           <p className="demo-note">
-            Indicadores demonstrativos para apresentação da Boxline.
+            Indicadores demonstrativos para apresentação da Boxlyne.
           </p>
         )}
       </section>
@@ -735,12 +767,14 @@ export default function Home() {
           <div className="dimension-guide">
             <p className="eyebrow">ENTENDA SUAS MEDIDAS</p>
             <h3>C × L × A: cada direção tem uma medida.</h3>
-            <DimensionScene
-              length={fields.length}
-              width={fields.width}
-              height={fields.height}
-              active={activeDimension}
-            />
+            <ViewportScene className="dimension-slot">
+              <DimensionScene
+                length={fields.length}
+                width={fields.width}
+                height={fields.height}
+                active={activeDimension}
+              />
+            </ViewportScene>
             <div className="dimension-tabs" aria-label="Explorar as medidas">
               {(["length", "width", "height"] as const).map((axis) => (
                 <button
@@ -1026,7 +1060,7 @@ export default function Home() {
         href={whatsappUrl()}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Falar com a Boxline pelo WhatsApp"
+        aria-label="Falar com a Boxlyne pelo WhatsApp"
       >
         <MessageCircle size={24} />
       </a>

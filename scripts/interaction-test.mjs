@@ -1,7 +1,9 @@
 import { chromium, expect } from "@playwright/test";
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-await page.goto("http://127.0.0.1:3000", { waitUntil: "networkidle" });
+await page.goto(process.env.SITE_URL || "http://127.0.0.1:3000", {
+  waitUntil: "networkidle",
+});
 await expect(page.locator(".hero-art .is-ready")).toBeVisible();
 const hero = page.locator(".hero-art canvas");
 const initial = await hero.screenshot();
@@ -63,7 +65,12 @@ const mobile = await browser.newContext({
   hasTouch: true,
 });
 const touchPage = await mobile.newPage();
-await touchPage.goto("http://127.0.0.1:3000", { waitUntil: "networkidle" });
+await touchPage.goto(process.env.SITE_URL || "http://127.0.0.1:3000", {
+  waitUntil: "networkidle",
+});
+await touchPage
+  .locator(".hero-scene-loader")
+  .tap({ position: { x: 40, y: 40 } });
 await expect(touchPage.locator(".hero-art .is-ready")).toBeVisible();
 const touchHero = touchPage.locator(".hero-art canvas");
 const beforeTouch = await touchHero.screenshot();

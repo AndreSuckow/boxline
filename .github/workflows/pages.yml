@@ -1,4 +1,4 @@
-name: Publish Boxline
+name: Publish Boxlyne
 on:
   push:
     branches: [main]

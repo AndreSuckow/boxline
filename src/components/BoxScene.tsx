@@ -44,21 +44,10 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
     const fill = new THREE.DirectionalLight(0xffffff, 2);
     fill.position.set(6, 3, -4);
     scene.add(fill);
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = 256;
-    const ctx = canvas.getContext("2d")!;
-    ctx.fillStyle = "#b9a080";
-    ctx.fillRect(0, 0, 256, 256);
-    let seed = 47;
-    for (let i = 0; i < 22000; i++) {
-      seed = (seed * 16807) % 2147483647;
-      const x = seed % 256;
-      seed = (seed * 16807) % 2147483647;
-      const y = seed % 256;
-      ctx.fillStyle = i % 2 ? "rgba(68,41,10,.055)" : "rgba(255,245,213,.13)";
-      ctx.fillRect(x, y, 1, 2);
-    }
-    const texture = new THREE.CanvasTexture(canvas);
+    const texture = new THREE.TextureLoader().load(
+      (process.env.NEXT_PUBLIC_BASE_PATH || "") + "/textures/kraft.webp",
+      () => schedule(),
+    );
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(2, 2);
     texture.colorSpace = THREE.SRGBColorSpace;
@@ -107,7 +96,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
       const lc = labelCanvas.getContext("2d")!;
       lc.fillStyle = "#443522";
       lc.font = "600 110px Arial";
-      lc.fillText("boxline", 85, 255);
+      lc.fillText("boxlyne", 85, 255);
       lc.font = "23px Arial";
       lc.fillText("ENGENHARIA DE EMBALAGEM", 91, 305);
       lc.strokeStyle = "#443522";
@@ -180,6 +169,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
       lastX = e.clientX;
       lastY = e.clientY;
       hovering = true;
+      schedule();
     };
     const down = (e: PointerEvent) => {
       if (
@@ -217,6 +207,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
         targetY = -0.25;
       } else return;
       e.preventDefault();
+      schedule();
     };
     if (!exploded) {
       group.children.forEach((child) => {
@@ -244,14 +235,23 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
       renderer.setSize(el.clientWidth, el.clientHeight);
       camera.aspect = el.clientWidth / el.clientHeight;
       camera.updateProjectionMatrix();
+      schedule();
     });
     resize.observe(el);
     const observer = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
+      if (visible) schedule();
     });
     observer.observe(el);
-    const render = () => {
-      frame = requestAnimationFrame(render);
+    let shadersReady = false;
+    function schedule() {
+      if (shadersReady && !frame && visible)
+        frame = requestAnimationFrame(render);
+    }
+    if (exploded)
+      window.addEventListener("scroll", schedule, { passive: true });
+    function render() {
+      frame = 0;
       if (!visible) return;
       if (!exploded) {
         const smoothing = reduced.matches ? 1 : 0.16;
@@ -265,6 +265,11 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
           targetX,
           smoothing,
         );
+        if (
+          Math.abs(group.rotation.x - targetX) > 0.0001 ||
+          Math.abs(group.rotation.y - targetY) > 0.0001
+        )
+          schedule();
       } else {
         const rect = scrollRegion?.getBoundingClientRect();
         const travel = rect
@@ -325,16 +330,32 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
           descriptions.style.visibility = reveal > 0 ? "visible" : "hidden";
       }
       renderer.render(scene, camera);
-    };
-    render();
-    setReady(true);
+    }
+    let disposed = false;
+    const compileTimer = window.setTimeout(() => {
+      renderer
+        .compileAsync(scene, camera)
+        .then(() => {
+          if (!disposed) {
+            shadersReady = true;
+            schedule();
+            setReady(true);
+          }
+        })
+        .catch(() => {
+          if (!disposed) setReady(false);
+        });
+    }, 0);
     const lost = (e: Event) => {
       e.preventDefault();
       setReady(false);
     };
     renderer.domElement.addEventListener("webglcontextlost", lost);
     return () => {
+      disposed = true;
+      window.clearTimeout(compileTimer);
       cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
       resize.disconnect();
       observer.disconnect();
       el.removeEventListener("pointermove", move);
@@ -372,7 +393,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
       aria-label={
         exploded
           ? "Estrutura 3D: face externa, miolo ondulado e face interna"
-          : "Caixa de papelão Boxline em 3D. Mova o mouse, arraste com o dedo ou use as setas para girar; Home restaura a posição"
+          : "Caixa de papelão Boxlyne em 3D. Mova o mouse, arraste com o dedo ou use as setas para girar; Home restaura a posição"
       }
     >
       <div className="scene-fallback" aria-hidden="true">
@@ -385,7 +406,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
         ) : (
           <div className="mini-box">
             <i />
-            <b>boxline</b>
+            <b>boxlyne</b>
           </div>
         )}
       </div>
