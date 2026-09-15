@@ -19,7 +19,7 @@ const bodyFont = localFont({
 export const metadata: Metadata = {
   title: business.name + " — Proteção começa na embalagem.",
   description:
-    "Caixas de papelão para e-commerce, transporte e projetos sob medida. Conheça a engenharia por trás de cada caixa e solicite seu orçamento.",
+    "Caixas de papelão para e-commerce, transporte e projetos sob medida em Curitiba, Campo Largo e regiões metropolitanas próximas.",
 };
 export default function RootLayout({
   children,

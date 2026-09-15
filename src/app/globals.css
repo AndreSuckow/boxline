@@ -136,17 +136,19 @@ p {
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font: 800 30px/1 var(--display-font);
+}
+.logo .brand-logo {
+  width: 151px;
+  height: auto;
+  overflow: visible;
+}
+.brand-word {
+  fill: currentColor;
+  font: 800 31px/1 var(--display-font);
   letter-spacing: -1.7px;
 }
-.logo svg {
-  width: 29px;
-  height: 29px;
-}
-.logo-dot {
-  color: var(--kraft);
-  margin-left: -7px;
+.brand-dot {
+  fill: var(--kraft);
 }
 .nav {
   display: flex;
@@ -1535,6 +1537,8 @@ p {
 }
 
 .company-marquee {
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
   margin-top: 25px;
   mask-image: linear-gradient(

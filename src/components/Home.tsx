@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import ViewportScene from "./ViewportScene";
+import BrandLogo from "./BrandLogo";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -27,7 +28,7 @@ const BoxScene = dynamic(() => import("./BoxScene"), {
       <div className="scene-fallback">
         <div className="mini-box">
           <i />
-          <b>boxlyne</b>
+          <b>BoxLyne</b>
         </div>
       </div>
     </div>
@@ -73,7 +74,7 @@ const questions = [
   ],
   [
     "Como funciona a entrega?",
-    "Prazo, frete e cobertura são confirmados no orçamento conforme o local de entrega e as características do pedido.",
+    "Atendemos Curitiba, Campo Largo e regiões metropolitanas próximas. Prazo e frete são confirmados no orçamento conforme o endereço e as características do pedido.",
   ],
 ];
 export default function Home() {
@@ -340,10 +341,8 @@ export default function Home() {
         Pular para o conteúdo
       </a>
       <header className="header">
-        <Link href="/" className="logo" aria-label="Boxlyne, início">
-          <Box strokeWidth={1.6} />
-          {business.name.toLowerCase()}
-          <span className="logo-dot">.</span>
+        <Link href="/" className="logo" aria-label="BoxLyne, início">
+          <BrandLogo />
         </Link>
         <button
           id="menu-toggle"
@@ -363,7 +362,7 @@ export default function Home() {
           {[
             ["engenharia", "A caixa por dentro"],
             ["produtos", "Nossas caixas"],
-            ["sobre", "Sobre a Boxlyne"],
+            ["sobre", "Sobre a BoxLyne"],
           ].map(([id, label]) => (
             <a key={id} href={"#" + id} onClick={() => setMenu(false)}>
               {label}
@@ -424,7 +423,7 @@ export default function Home() {
                 <div className="scene-fallback">
                   <div className="mini-box">
                     <i />
-                    <b>boxlyne</b>
+                    <b>BoxLyne</b>
                   </div>
                 </div>
               </div>
@@ -470,7 +469,7 @@ export default function Home() {
         <div className="company-heading">
           <div>
             <p className="eyebrow">BOAS PARCERIAS. BOAS ENTREGAS.</p>
-            <h2 id="companies-title">Quem confia na Boxlyne.</h2>
+            <h2 id="companies-title">Quem confia na BoxLyne.</h2>
           </div>
         </div>
         <div
@@ -647,7 +646,7 @@ export default function Home() {
       <section className="postal section" id="correios">
         <div className="catalog-heading reveal">
           <div>
-            <p className="eyebrow">DO SEU NEGÓCIO PARA TODO O BRASIL</p>
+            <p className="eyebrow">CAIXAS PARA ENVIOS NA SUA REGIÃO</p>
             <h2>
               Caixas para envios
               <br />
@@ -730,7 +729,7 @@ export default function Home() {
         </div>
         {business.demo && (
           <p className="demo-note">
-            Indicadores demonstrativos para apresentação da Boxlyne.
+            Indicadores demonstrativos para apresentação da BoxLyne.
           </p>
         )}
       </section>
@@ -1015,9 +1014,8 @@ export default function Home() {
       </section>
       <footer className="footer">
         <div>
-          <Link className="logo" href="/">
-            <Box strokeWidth={1.6} />
-            {business.name.toLowerCase()}.
+          <Link className="logo" href="/" aria-label="BoxLyne, início">
+            <BrandLogo />
           </Link>
           <p>
             {business.tagline}.<br />
@@ -1033,7 +1031,7 @@ export default function Home() {
           <p>{business.hours}</p>
         </div>
         <div>
-          <p className="eyebrow">FEITA PARA IR MAIS LONGE</p>
+          <p className="eyebrow">ATENDIMENTO REGIONAL</p>
           <p>{business.address}</p>
           <a href="#orcamento">
             Solicitar orçamento <ArrowUpRight size={14} />
@@ -1056,7 +1054,7 @@ export default function Home() {
         href={whatsappUrl()}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Falar com a Boxlyne pelo WhatsApp"
+        aria-label="Falar com a BoxLyne pelo WhatsApp"
       >
         <MessageCircle size={24} />
       </a>

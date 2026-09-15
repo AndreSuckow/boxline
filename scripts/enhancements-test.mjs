@@ -52,6 +52,12 @@ expect(
   await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
 ).toBe(true);
 await page.setViewportSize({ width: 320, height: 740 });
+await page.evaluate(
+  () =>
+    new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve)),
+    ),
+);
 expect(
   await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
 ).toBe(true);

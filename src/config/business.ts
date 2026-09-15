@@ -1,16 +1,16 @@
 export const business = {
-  name: "Boxlyne",
+  name: "BoxLyne",
   tagline: "Engenharia de embalagem",
   // Substitua estes dados demonstrativos antes de publicar.
   demo: true,
   whatsapp: "5541998206552",
   phone: "(41) 99820-6552",
   email: "vendas@boxlyne.example",
-  address: "São Paulo, SP • Atendimento em todo o Brasil",
+  address: "Curitiba, Campo Largo e regiões metropolitanas próximas",
   hours: "Segunda a sexta, das 8h às 18h",
   response: "Resposta comercial em até 24h úteis",
   defaultMessage:
-    "Olá, Boxlyne! Quero encontrar a embalagem certa para o meu produto.",
+    "Olá, BoxLyne! Quero encontrar a embalagem certa para o meu produto.",
   stats: [
     { value: 80, prefix: "+", suffix: "", label: "modelos de caixas" },
     { value: 100, prefix: "", suffix: "%", label: "projetos sob medida" },

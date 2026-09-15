@@ -1,4 +1,4 @@
-# Boxlyne
+# BoxLyne
 
 Site comercial em Next.js, React, TypeScript, Three.js e animações nativas do navegador.
 

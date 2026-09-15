@@ -96,7 +96,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
       const lc = labelCanvas.getContext("2d")!;
       lc.fillStyle = "#443522";
       lc.font = "600 110px Arial";
-      lc.fillText("boxlyne", 85, 255);
+      lc.fillText("BoxLyne", 85, 255);
       lc.font = "23px Arial";
       lc.fillText("ENGENHARIA DE EMBALAGEM", 91, 305);
       lc.strokeStyle = "#443522";
@@ -393,7 +393,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
       aria-label={
         exploded
           ? "Estrutura 3D: face externa, miolo ondulado e face interna"
-          : "Caixa de papelão Boxlyne em 3D. Mova o mouse, arraste com o dedo ou use as setas para girar; Home restaura a posição"
+          : "Caixa de papelão BoxLyne em 3D. Mova o mouse, arraste com o dedo ou use as setas para girar; Home restaura a posição"
       }
     >
       <div className="scene-fallback" aria-hidden="true">
@@ -406,7 +406,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
         ) : (
           <div className="mini-box">
             <i />
-            <b>boxlyne</b>
+            <b>BoxLyne</b>
           </div>
         )}
       </div>

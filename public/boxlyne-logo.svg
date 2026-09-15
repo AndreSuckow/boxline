@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 104" role="img" aria-labelledby="title">
+  <title id="title">BoxLyne</title>
+  <g fill="none" stroke="#282b25" stroke-width="4.8" stroke-linejoin="round">
+    <path d="M50 6 94 30v50L50 102 6 80V30Z"/>
+    <path d="m6 30 44 26 44-26M50 56v46M28 18l44 26"/>
+  </g>
+  <text x="116" y="72" fill="#282b25" font-family="Manrope,Arial,sans-serif" font-size="60" font-weight="800" letter-spacing="-3">BoxLyne<tspan fill="#886337">.</tspan></text>
+</svg>

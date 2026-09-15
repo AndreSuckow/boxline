@@ -2,7 +2,7 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <main className="not-found">
-      <p className="eyebrow">BOXLYNE / 404</p>
+      <p className="eyebrow">BoxLyne / 404</p>
       <h1>Essa página saiu da caixa.</h1>
       <p>Volte para conhecer nossas soluções de embalagem.</p>
       <Link className="button" href="/">

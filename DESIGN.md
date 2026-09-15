@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Boxlyne
+name: BoxLyne
 description: Uma apresentação industrial do papelão, da estrutura ao orçamento.
 colors:
   primary: "#282b25"
@@ -31,7 +31,7 @@ components:
     rounded: "4px"
 ---
 
-# Boxlyne Design System
+# BoxLyne Design System
 
 ## Overview
 
@@ -76,6 +76,10 @@ Faixa contínua de parceiros com nomes provisórios mantidos em business.ts, mov
 
 Orçamento com vários tipos: um editor para o modelo selecionado, lista de resumos com valores preservados, adicionar e remover por botão. Validar todos os itens e abrir o primeiro erro; reunir cada modelo, medida, quantidade e finalidade em uma mensagem. A ilustração de postagem usa a marca Correios em uma cor, como a referência.
 
-Desempenho: preservar toda rotação, camadas por scroll, faixa contínua e orçamento múltiplo. Carregar WebGL inferior por proximidade; na abertura, ativar a cena principal ao entrar com o mouse, tocar ou após oito segundos. Renderizar a caixa somente quando houver movimento, scroll ou resize. Fontes WOFF2 locais Manrope e DM Sans com métricas de fallback ajustadas; títulos já visíveis no HTML inicial. Revelações, contadores e velocidade da faixa usam APIs nativas. A marca é Boxlyne; /boxline permanece como endereço de publicação.
+Desempenho: preservar toda rotação, camadas por scroll, faixa contínua e orçamento múltiplo. Carregar WebGL inferior por proximidade; na abertura, ativar a cena principal ao entrar com o mouse, tocar ou após oito segundos. Renderizar a caixa somente quando houver movimento, scroll ou resize. Fontes WOFF2 locais Manrope e DM Sans com métricas de fallback ajustadas; títulos já visíveis no HTML inicial. Revelações, contadores e velocidade da faixa usam APIs nativas. A marca é BoxLyne; /boxline permanece como endereço de publicação.
 
 Textura kraft pré-calculada em WebP sem perdas, preservando o ruído original. Compilar os materiais em etapa separada e usar compileAsync. Fontes com font-display optional evitam troca tardia; no título inicial do celular, usar a métrica estável da fonte de sistema para manter a pintura imediata. Detalhes gráficos de tamanho fixo fora da tela usam content-visibility auto.
+
+## Marca e cobertura comercial
+
+Grafia oficial: BoxLyne. O símbolo geométrico e o wordmark são SVG responsivos; manter a versão vetorial como fonte principal. Atendimento atual limitado a Curitiba, Campo Largo e regiões metropolitanas próximas. Não declarar cobertura nacional.
