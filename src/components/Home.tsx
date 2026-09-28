@@ -560,7 +560,7 @@ export default function Home() {
           {business.postalSizes.map((p, i) => (
             <article className="postal-card reveal" key={p.name}>
               <div className="postal-art" aria-hidden="true">
-                <PostalBox size={p.size} />
+                <PostalBox size={business.postalSizes[[0, 2, 1, 3][i]].size} />
               </div>
               <p className="eyebrow">{p.name.toUpperCase()}</p>
               <h3>
