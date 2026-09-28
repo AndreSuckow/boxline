@@ -11,20 +11,54 @@ page.on("pageerror", (e) => errors.push(e.message));
 await page.goto(process.env.SITE_URL || "http://127.0.0.1:3000", {
   waitUntil: "networkidle",
 });
-await expect(page.locator(".company-list").first().locator("li")).toHaveCount(
-  6,
-);
-await expect(
-  page.getByRole("button", { name: /Pausar faixa|Continuar faixa/ }),
-).toHaveCount(0);
+await expect(page.locator(".company-banner, #produtos")).toHaveCount(0);
 await page.locator("#correios").scrollIntoViewIfNeeded();
 await expect(page.locator(".postal-card")).toHaveCount(4);
 await page.screenshot({ path: "test-results/postal.png" });
-await page.getByRole("button", { name: "Orçar esta medida" }).nth(2).click();
-await expect(page.locator("#length")).toHaveValue("30");
-await expect(page.locator("#width")).toHaveValue("20");
-await expect(page.locator("#height")).toHaveValue("15");
-await expect(page.locator("#product")).toHaveValue("Caixas para Correios");
+await page.evaluate(() => {
+  window.__postalUrls = [];
+  window.open = (url) => {
+    window.__postalUrls.push(String(url));
+    return null;
+  };
+});
+const sizes = [
+  "22 × 14 × 4",
+  "18 × 11,5 × 5",
+  "22,5 × 19 × 6",
+  "17 × 12,5 × 7,5",
+];
+for (let i = 0; i < 4; i++) {
+  const card = page.locator(".postal-card").nth(i);
+  const input = card.locator("input");
+  const button = card.getByRole("button", { name: "Orçar esta medida" });
+  await button.click();
+  await expect(input).toHaveAttribute("aria-invalid", "true");
+  await input.fill("0");
+  await button.click();
+  await expect(input).toHaveAttribute("aria-invalid", "true");
+  await input.fill("abc");
+  await expect(input).toHaveValue("0");
+  await input.fill("1.5");
+  await expect(input).toHaveValue("0");
+  await input.fill(String(100 + i));
+  await button.click();
+  await expect(
+    card.getByRole("link", { name: /Continuar no WhatsApp/ }),
+  ).toHaveCount(0);
+  const url = await page.evaluate(() => window.__postalUrls.at(-1));
+  const message = new URL(url).searchParams.get("text");
+  expect(message).toContain("Modelo 0" + [2, 4, 1, 3][i]);
+  expect(message).toContain(sizes[i] + " cm");
+  expect(message).toContain(100 + i + " unidades");
+}
+expect(await page.evaluate(() => window.__postalUrls.length)).toBe(4);
+await page.screenshot({ path: "test-results/postal-quantity-desktop.png" });
+await page.setViewportSize({ width: 390, height: 1000 });
+await page.locator("#correios").scrollIntoViewIfNeeded();
+await page.screenshot({ path: "test-results/postal-quantity-mobile.png" });
+await page.setViewportSize({ width: 1440, height: 1000 });
+await page.locator("#orcamento").scrollIntoViewIfNeeded();
 await expect(page.locator(".dimension-ready canvas")).toBeVisible();
 await page.locator("#height").focus();
 await expect(page.locator(".dimension-tabs button").last()).toHaveAttribute(
@@ -64,5 +98,5 @@ expect(
 expect(errors).toEqual([]);
 await browser.close();
 console.log(
-  "PASS: companies, continuous carousel, four postal sizes, quote handoff, live 3D dimensions, focus, accessibility and mobile.",
+  "PASS: removed sections, four postal sizes, quote handoff, live 3D dimensions, focus, accessibility and mobile.",
 );

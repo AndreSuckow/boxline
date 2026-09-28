@@ -9,12 +9,13 @@ export default function BrandLogo() {
       <g
         className="brand-symbol"
         fill="none"
-        stroke="currentColor"
-        strokeWidth="2.4"
+        stroke="#f86b2b"
+        strokeWidth="13"
+        strokeLinecap="round"
         strokeLinejoin="round"
+        transform="translate(3 1) scale(0.3)"
       >
-        <path d="M25 3 47 15v25L25 51 3 40V15Z" />
-        <path d="m3 15 22 13 22-13M25 28v23M14 9l22 13" />
+        <path d="M7 46 73 7 139 46 73 84 7 46v76l66 38 66-38V66M73 84v55" />
       </g>
       <text className="brand-word" x="58" y="36">
         BoxLyne<tspan className="brand-dot">.</tspan>

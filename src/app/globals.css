@@ -1521,69 +1521,6 @@ p {
   outline-offset: -5px;
 }
 
-.company-banner {
-  padding: 45px max(23px, calc((100vw - 1220px) / 2));
-  border-bottom: 1px solid var(--line);
-}
-.company-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-.company-heading h2 {
-  font-size: 24px;
-  letter-spacing: -0.7px;
-}
-
-.company-marquee {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  margin-top: 25px;
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 6%,
-    black 94%,
-    transparent
-  );
-}
-.company-track {
-  display: flex;
-  width: max-content;
-  animation: company-scroll 32s linear infinite;
-}
-.company-list {
-  display: flex;
-  flex: none;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.company-list li {
-  width: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  font-family: var(--display-font);
-  font-weight: 600;
-  font-size: 23px;
-  color: var(--muted);
-  padding: 24px 0;
-}
-.company-placeholder {
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 10px;
-}
-
-@keyframes company-scroll {
-  to {
-    transform: translateX(-50%);
-  }
-}
 .postal {
   border-top: 1px solid var(--line);
   background: var(--surface);
@@ -1616,59 +1553,12 @@ p {
   height: 180px;
   display: grid;
   place-items: center;
-  perspective: 800px;
 }
-.postal-box {
-  position: relative;
-  width: 140px;
-  height: 65px;
-  background: #bd9b70;
-  transform: rotateX(-16deg) rotateY(-30deg);
-  transform-style: preserve-3d;
-  box-shadow: 10px 20px 25px #44352212;
-}
-.postal-box span {
-  font-family: var(--display-font);
+.postal-box-art {
   display: block;
-  padding: 20px 15px;
-  color: #443522;
-  font-size: 13px;
-  font-weight: 600;
-}
-.postal-box i {
-  position: absolute;
-  width: 140px;
-  height: 95px;
-  bottom: 100%;
-  left: 0;
-  background: #c2a477;
-  transform-origin: bottom;
-  transform: rotateX(90deg);
-}
-.postal-box i::after {
-  content: "";
-  position: absolute;
-  inset: 0 43%;
-  background: #d6bc94;
-}
-.postal-box b {
-  position: absolute;
-  width: 95px;
-  height: 65px;
-  left: 100%;
-  bottom: 0;
-  background: #987346;
-  transform-origin: left;
-  transform: rotateY(90deg);
-}
-.postal-size-0 .postal-box {
-  scale: 0.8;
-}
-.postal-size-1 .postal-box {
-  scale: 0.9;
-}
-.postal-size-3 .postal-box {
-  scale: 1.1;
+  width: 100%;
+  max-width: 210px;
+  height: 150px;
 }
 .postal-note {
   display: flex;
@@ -1784,13 +1674,6 @@ p {
   .postal-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .company-heading h2 {
-    font-size: 21px;
-  }
-  .company-list li {
-    width: 180px;
-    font-size: 20px;
-  }
   .dimension-guide {
     max-width: 520px;
   }
@@ -1801,7 +1684,6 @@ p {
   }
   .postal-art {
     height: 140px;
-    scale: 0.8;
   }
   .postal-card h3 {
     font-size: 18px;
@@ -1823,26 +1705,6 @@ p {
   .dimension-tabs button span {
     margin-right: 4px;
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .company-track {
-    animation: none;
-  }
-  .company-marquee {
-    mask-image: none;
-    overflow-x: auto;
-  }
-  .company-list[aria-hidden="true"] {
-    display: none;
-  }
-}
-
-.postal-box span {
-  color: var(--ink);
-}
-.company-marquee:focus-visible {
-  outline: 2px solid var(--green);
-  outline-offset: 4px;
 }
 
 .correios-print {
@@ -1985,8 +1847,7 @@ p {
   }
 }
 /* Fixed-size artwork keeps off-screen details out of initial layout. */
-.product-image,
-.postal-art {
+.product-image {
   content-visibility: auto;
 }
 
@@ -1998,4 +1859,42 @@ p {
 .hero-scene-loader {
   width: 100%;
   height: 100%;
+}
+
+.postal-box-art image {
+  filter: grayscale(1) brightness(0.45);
+}
+
+.postal-quote {
+  margin-top: 18px;
+}
+.postal-quote label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.postal-quote input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--muted);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+.postal-quote input:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+.postal-quote input[aria-invalid="true"] {
+  border-color: #a52e28;
+}
+.postal-error {
+  min-height: 36px;
+  margin: 6px 0;
+  font-size: 12px;
+  color: #a52e28;
 }

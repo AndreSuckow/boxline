@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import ViewportScene from "./ViewportScene";
 import BrandLogo from "./BrandLogo";
+import PostalBox from "./PostalBox";
 import EngineeringHeading from "./EngineeringHeading";
 import {
   ArrowUpRight,
@@ -53,11 +54,11 @@ type Fields = {
   purpose: string;
 };
 const initial: Fields = {
-  length: String(business.products[0].size[0]),
-  width: String(business.products[0].size[1]),
-  height: String(business.products[0].size[2]),
-  quantity: "1000",
-  product: business.products[0].title,
+  length: "",
+  width: "",
+  height: "",
+  quantity: "",
+  product: "Sob medida",
   purpose: "",
 };
 const questions = [
@@ -81,13 +82,18 @@ const questions = [
 export default function Home() {
   const root = useRef<HTMLElement>(null);
   const [menu, setMenu] = useState(false);
+  const [postalQuantities, setPostalQuantities] = useState<string[]>(
+    business.postalSizes.map(() => ""),
+  );
+  const [postalErrors, setPostalErrors] = useState<string[]>(
+    business.postalSizes.map(() => ""),
+  );
   const [items, setItems] = useState<(Fields & { id: number })[]>([
     { ...initial, id: 1 },
   ]);
   const [activeItem, setActiveItem] = useState(1);
   const itemSequence = useRef(1);
   const pendingFocus = useRef<string | null>(null);
-  const carouselFrame = useRef(0);
   const fields = items.find((item) => item.id === activeItem)!;
   function setFields(update: (previous: Fields) => Fields) {
     setItems((previous) =>
@@ -170,24 +176,6 @@ export default function Home() {
       pendingFocus.current = null;
     }
   }, [activeItem, errors]);
-  useEffect(() => () => cancelAnimationFrame(carouselFrame.current), []);
-  function carouselSpeed(element: HTMLElement, rate: number) {
-    const animation = element
-      .querySelector(".company-track")
-      ?.getAnimations()[0];
-    if (!animation) return;
-    cancelAnimationFrame(carouselFrame.current);
-    const startRate = animation.playbackRate;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const progress = Math.min((now - start) / 650, 1);
-      animation.updatePlaybackRate(
-        startRate + (rate - startRate) * (1 - Math.pow(1 - progress, 3)),
-      );
-      if (progress < 1) carouselFrame.current = requestAnimationFrame(tick);
-    };
-    carouselFrame.current = requestAnimationFrame(tick);
-  }
   function chooseItem(id: number) {
     setActiveItem(id);
     setErrors({});
@@ -251,42 +239,32 @@ export default function Home() {
     setHandoff("");
     setStatus("");
   }
-  function selectProduct(index: number) {
-    const p = business.products[index];
-    setFields((old) => ({
-      ...old,
-      product: p.title,
-      length: String(p.size[0]),
-      width: String(p.size[1]),
-      height: String(p.size[2]),
-    }));
-    setErrors({});
-    setHandoff("");
-    setStatus("");
-    document.getElementById("orcamento")?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-    });
-  }
   function selectPostal(index: number) {
-    const p = business.postalSizes[index];
-    setFields((old) => ({
-      ...old,
-      product: "Caixas para Correios",
-      length: String(p.size[0]),
-      width: String(p.size[1]),
-      height: String(p.size[2]),
-      purpose: "Envio pelos Correios",
-    }));
-    setErrors({});
-    setStatus("");
-    setHandoff("");
-    document.getElementById("orcamento")?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-    });
+    const quantity = postalQuantities[index];
+    if (
+      !/^\d+$/.test(quantity) ||
+      Number(quantity) < 1 ||
+      Number(quantity) > 10000000
+    ) {
+      setPostalErrors((old) =>
+        old.map((value, i) =>
+          i === index ? "Informe de 1 a 10.000.000 unidades." : value,
+        ),
+      );
+      document.getElementById("postal-quantity-" + index)?.focus();
+      return;
+    }
+    const model = business.postalSizes[index];
+    const message =
+      "Olá, BoxLyne! Gostaria de um orçamento.\n\nModelo: " +
+      model.name +
+      " — Caixa para envio pelos Correios\nMedidas externas (C × L × A): " +
+      model.size.map((value) => value.toLocaleString("pt-BR")).join(" × ") +
+      " cm\nQuantidade: " +
+      Number(quantity).toLocaleString("pt-BR") +
+      " unidades";
+    const url = whatsappUrl(message);
+    window.open(url, "_blank", "noopener,noreferrer");
   }
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -316,7 +294,7 @@ export default function Home() {
             (items.length > 1 ? "TIPO " + (index + 1) + "\n" : "") +
             "Modelo: " +
             item.product +
-            "\nMedidas (C × L × A): " +
+            "\nMedidas externas (C × L × A): " +
             item.length +
             " × " +
             item.width +
@@ -362,7 +340,7 @@ export default function Home() {
         >
           {[
             ["engenharia", "A caixa por dentro"],
-            ["produtos", "Nossas caixas"],
+            ["correios", "Nossas caixas"],
             ["sobre", "Sobre a BoxLyne"],
           ].map(([id, label]) => (
             <a key={id} href={"#" + id} onClick={() => setMenu(false)}>
@@ -398,7 +376,7 @@ export default function Home() {
             <a href="#orcamento" className="button">
               Solicitar orçamento <ArrowUpRight size={18} />
             </a>
-            <a className="text-link" href="#produtos">
+            <a className="text-link" href="#correios">
               Conhecer nossas caixas <ArrowRight size={17} />
             </a>
           </div>
@@ -466,44 +444,6 @@ export default function Home() {
           Sua marca, bem embalada
         </span>
       </div>
-      <section className="company-banner" aria-labelledby="companies-title">
-        <div className="company-heading">
-          <div>
-            <p className="eyebrow">BOAS PARCERIAS. BOAS ENTREGAS.</p>
-            <h2 id="companies-title">Quem confia na BoxLyne.</h2>
-          </div>
-        </div>
-        <div
-          tabIndex={0}
-          role="region"
-          aria-label="Empresas parceiras"
-          className="company-marquee"
-          onPointerEnter={(e) => {
-            if (e.pointerType === "mouse") carouselSpeed(e.currentTarget, 0.25);
-          }}
-          onPointerLeave={(e) => carouselSpeed(e.currentTarget, 1)}
-        >
-          <div className="company-track">
-            {[0, 1].map((copy) => (
-              <ul
-                className="company-list"
-                key={copy}
-                aria-hidden={copy === 1 ? true : undefined}
-              >
-                {business.companies.map((company) => (
-                  <li key={company}>
-                    <Box size={22} strokeWidth={1.2} aria-hidden="true" />
-                    <span>{company}</span>
-                  </li>
-                ))}
-              </ul>
-            ))}
-          </div>
-        </div>
-        <p className="company-placeholder">
-          Espaço reservado para as empresas parceiras.
-        </p>
-      </section>
       <section className="engineering section" id="engenharia">
         <div className="section-heading reveal">
           <p className="eyebrow">A CAIXA POR DENTRO</p>
@@ -600,45 +540,6 @@ export default function Home() {
           })}
         </div>
       </section>
-      <section className="products section" id="produtos">
-        <div className="catalog-heading reveal">
-          <div>
-            <p className="eyebrow">NOSSAS CAIXAS</p>
-            <h2>
-              Existe uma caixa certa
-              <br />
-              <span>para o seu próximo passo.</span>
-            </h2>
-          </div>
-          <p>
-            Do primeiro envio à operação em escala.
-            <br />
-            Encontre o ponto de partida para sua solução.
-          </p>
-        </div>
-        <div className="product-grid">
-          {business.products.map((p, i) => (
-            <article className="product-card reveal" key={p.id}>
-              <div className={"product-image " + p.style}>
-                <div className="mini-box">
-                  <i />
-                  <b>{p.style === "print" ? "sua marca" : ""}</b>
-                </div>
-                <span>{p.dimensions}</span>
-              </div>
-              <p className="product-tag">{p.tag}</p>
-              <h3>{p.title}</h3>
-              <p>{p.description}</p>
-              <button
-                className="product-action"
-                onClick={() => selectProduct(i)}
-              >
-                Orçar este modelo <ArrowUpRight size={18} />
-              </button>
-            </article>
-          ))}
-        </div>
-      </section>
       <section className="postal section" id="correios">
         <div className="catalog-heading reveal">
           <div>
@@ -658,41 +559,68 @@ export default function Home() {
         <div className="postal-grid">
           {business.postalSizes.map((p, i) => (
             <article className="postal-card reveal" key={p.name}>
-              <div className={"postal-art postal-size-" + i} aria-hidden="true">
-                <div className="postal-box">
-                  <span
-                    className="correios-print"
-                    style={{
-                      maskImage:
-                        "url(" +
-                        (process.env.NEXT_PUBLIC_BASE_PATH || "") +
-                        "/brands/correios.svg)",
-                    }}
-                  />
-                  <i />
-                  <b />
-                </div>
+              <div className="postal-art" aria-hidden="true">
+                <PostalBox size={p.size} />
               </div>
               <p className="eyebrow">{p.name.toUpperCase()}</p>
               <h3>
-                {p.size.join(" × ")} <span>cm</span>
+                {p.size
+                  .map((value) => value.toLocaleString("pt-BR"))
+                  .join(" × ")}{" "}
+                <span>cm</span>
               </h3>
               <p>{p.description}</p>
-              <button
-                className="product-action"
-                type="button"
-                onClick={() => selectPostal(i)}
+              <form
+                className="postal-quote"
+                noValidate
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  selectPostal(i);
+                }}
               >
-                Orçar esta medida <ArrowUpRight size={18} />
-              </button>
+                <label htmlFor={"postal-quantity-" + i}>Quantidade</label>
+                <input
+                  id={"postal-quantity-" + i}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={8}
+                  placeholder="Ex.: 500"
+                  value={postalQuantities[i]}
+                  aria-label={"Quantidade para " + p.name}
+                  aria-invalid={!!postalErrors[i]}
+                  aria-describedby={"postal-error-" + i}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (!/^\d*$/.test(value)) return;
+                    setPostalQuantities((old) =>
+                      old.map((item, index) => (index === i ? value : item)),
+                    );
+                    setPostalErrors((old) =>
+                      old.map((item, index) => (index === i ? "" : item)),
+                    );
+                  }}
+                />
+                <p
+                  className="postal-error"
+                  id={"postal-error-" + i}
+                  aria-live="polite"
+                >
+                  {postalErrors[i]}
+                </p>
+                <button className="product-action" type="submit">
+                  Orçar esta medida <ArrowUpRight size={18} />
+                </button>
+              </form>
             </article>
           ))}
         </div>
         <div className="postal-note">
           <Ruler size={19} />
           <p>
-            Comprimento × largura × altura. Medidas iniciais de catálogo;
-            confirme o formato e as condições de postagem no orçamento.
+            Medidas externas em centímetros: comprimento × largura × altura.
+            Imagens das caixas meramente ilustrativas. Confirme as condições de
+            postagem no orçamento.
           </p>
         </div>
       </section>
@@ -723,11 +651,6 @@ export default function Home() {
             </div>
           ))}
         </div>
-        {business.demo && (
-          <p className="demo-note">
-            Indicadores demonstrativos para apresentação da BoxLyne.
-          </p>
-        )}
       </section>
       <section className="quote section" id="orcamento">
         <div className="quote-copy reveal">
@@ -788,7 +711,7 @@ export default function Home() {
                 : activeDimension === "width"
                   ? "Largura: a medida transversal da base, na direção indicada por L."
                   : "Altura: a distância da base ao topo da caixa, na direção indicada por A."}{" "}
-              Informe as medidas internas, em centímetros. O desenho acompanha
+              Informe as medidas externas, em centímetros. O desenho acompanha
               os valores do formulário.
             </p>
           </div>
@@ -797,7 +720,7 @@ export default function Home() {
           <div className="form-heading">
             <h3>Vamos dimensionar sua ideia.</h3>
             <p>
-              Informe as medidas internas da caixa, em centímetros. Precisa de
+              Informe as medidas externas da caixa, em centímetros. Precisa de
               modelos diferentes? Adicione cada tipo ao mesmo pedido.
             </p>
           </div>
@@ -1037,11 +960,7 @@ export default function Home() {
           <span>
             © {new Date().getFullYear()} {business.name}.
           </span>
-          <span>
-            {business.demo
-              ? "Site demonstrativo • Contatos e dados comerciais fictícios"
-              : "Engenharia que protege."}
-          </span>
+          <span>Todos os direitos reservados.</span>
           <a href="#conteudo">Voltar ao topo ↑</a>
         </div>
       </footer>

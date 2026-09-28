@@ -82,6 +82,18 @@ Textura kraft pré-calculada em WebP sem perdas, preservando o ruído original. 
 
 ## Marca e cobertura comercial
 
+Símbolo da marca: caixa laranja (#f86b2b) baseada na referência fornecida, com topo em losango, haste central e abertura no canto superior direito. BrandLogo.tsx e app/icon.svg mantêm a mesma geometria vetorial e cor; o ícone da aba usa fundo transparente.
+
 Grafia oficial: BoxLyne. O símbolo geométrico e o wordmark são SVG responsivos; manter a versão vetorial como fonte principal. Atendimento atual limitado a Curitiba, Campo Largo e regiões metropolitanas próximas. Não declarar cobertura nacional.
 
 As tampas giram pelas dobras nas bordas das paredes. O enquadramento do corte estrutural inclui a projeção da sombra no chão. As explicações aparecem em ordem 01, 02 e 03 conforme a rolagem. O título da seção seguinte digita somente enquanto visível, com pausa de um segundo após a primeira frase, mantendo o espaço do texto completo e leitura acessível; movimento reduzido exibe o texto imediatamente.
+
+Atualização: removidas a faixa de empresas e a seção “Existe uma caixa certa”. Nossas caixas leva a #correios. Medidas C × L × A em cm, convertidas da referência em mm: 22,5 × 19 × 6; 22 × 14 × 4; 17 × 12,5 × 7,5; 18 × 11,5 × 5. Limites dimensionais PAC/SEDEX consultados em https://www2.correios.com.br/sistemas/precosprazos/Formato.cfm em 28/09/2026; não são modelos oficiais dos Correios. Esta decisão substitui as descrições anteriores das seções removidas.
+
+Ilustrações de postagem em SVG com proporções derivadas de C × L × A, viewBox incluindo todas as faces e margem, centralizadas no cartão e responsivas sem recorte. Substituem as faces CSS 3D e escalas por índice.
+
+Cada cartão de postagem tem quantidade independente, apenas dígitos e validação de inteiro entre 1 e 10.000.000. Orçar esta medida abre WhatsApp com modelo, medidas e quantidade; cada cartão mantém apenas o botão Orçar esta medida, sem link adicional de continuação. Marca Correios usa SVG de proporção explícita, arquivo correios-fit.svg e ajuste meet para evitar recorte e cache do ativo antigo.
+
+Postagem: cartões ordenados por altura crescente (4, 5, 6 e 7,5 cm), mantendo a identificação dos modelos 02, 04, 01 e 03. Imagem, medidas e mensagem de orçamento usam o mesmo modelo; não permutar ilustrações isoladamente.
+
+Preparação comercial: removidos avisos demonstrativos; produção informada pelo cliente superior a 100 mil caixas. Rodapé com © e todos os direitos reservados. Medidas são sempre externas, inclusive no orçamento e WhatsApp. Ilustrações das caixas identificadas como meramente ilustrativas. Orçamento inicia com medidas e quantidade vazias e tipo Sob medida. Contatos e horários preservados.

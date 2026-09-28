@@ -12,6 +12,11 @@ await page.goto(process.env.SITE_URL || "http://127.0.0.1:3000", {
   waitUntil: "networkidle",
 });
 await page.locator("#orcamento").scrollIntoViewIfNeeded();
+await expect(page.locator("#quantity")).toHaveValue("");
+await page.locator("#length").fill("16");
+await page.locator("#width").fill("12");
+await page.locator("#height").fill("7");
+await page.locator("#quantity").fill("1000");
 await page.locator("#purpose").fill("Cosméticos");
 await page
   .getByRole("button", { name: "Adicionar outro tipo de caixa" })
@@ -40,11 +45,11 @@ await page.evaluate(() => {
     return null;
   };
 });
-await page.locator("form button[type=submit]").click();
+await page.locator(".quote-form button[type=submit]").click();
 await expect(page.locator("#width")).toBeFocused();
 await expect(page.locator("#width")).toHaveAttribute("aria-invalid", "true");
 await page.locator("#width").fill("12");
-await page.locator("form button[type=submit]").click();
+await page.locator(".quote-form button[type=submit]").click();
 let message = await page.evaluate(() =>
   new URL(window.__url).searchParams.get("text"),
 );
@@ -61,7 +66,7 @@ await expect(page.locator(".quote-item-list button")).toHaveCount(2);
 await expect(
   page.getByRole("link", { name: "Continuar no WhatsApp" }),
 ).toHaveCount(0);
-await page.locator("form button[type=submit]").click();
+await page.locator(".quote-form button[type=submit]").click();
 message = await page.evaluate(() =>
   new URL(window.__url).searchParams.get("text"),
 );
@@ -83,41 +88,18 @@ expect(
 ).toBe(true);
 await page.setViewportSize({ width: 1440, height: 1100 });
 await page.emulateMedia({ reducedMotion: "no-preference" });
-await page.locator(".company-banner").scrollIntoViewIfNeeded();
-await page.mouse.move(1, 1);
-await page.waitForTimeout(750);
-const rate = () =>
-  page
-    .locator(".company-track")
-    .evaluate((el) => el.getAnimations()[0].playbackRate);
-expect(await rate()).toBeCloseTo(1);
-await page.locator(".company-marquee").hover();
-await page.waitForTimeout(750);
-expect(await rate()).toBeCloseTo(0.25);
-const t = await page
-  .locator(".company-track")
-  .evaluate((el) => el.getAnimations()[0].currentTime);
-await page.waitForTimeout(300);
-expect(
-  await page
-    .locator(".company-track")
-    .evaluate((el) => el.getAnimations()[0].currentTime),
-).toBeGreaterThan(t);
-await page.mouse.move(1, 1);
-await page.waitForTimeout(750);
-expect(await rate()).toBeCloseTo(1);
 await page.locator("#correios").scrollIntoViewIfNeeded();
 await page.waitForTimeout(1000);
-const mask = await page
-  .locator(".correios-print")
+const logoPath = await page
+  .locator(".postal-box-art image")
   .first()
-  .evaluate((el) => getComputedStyle(el).maskImage);
-const logo = await page.request.get(mask.match(/url\(["']?(.*?)["']?\)/)[1]);
+  .getAttribute("href");
+const logo = await page.request.get(new URL(logoPath, page.url()).href);
 expect(logo.ok()).toBe(true);
 expect(await logo.text()).toContain("<svg");
 await page.screenshot({ path: "test-results/correios-logo.png" });
 expect(errors).toEqual([]);
 await browser.close();
 console.log(
-  "PASS: 3 types, preserved values, validation across items, combined WhatsApp, removal, mobile, axe, continuous hover slowdown and Correios asset.",
+  "PASS: 3 types, preserved values, validation across items, combined WhatsApp, removal, mobile, axe,  Correios asset.",
 );

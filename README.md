@@ -40,3 +40,7 @@ Os nomes de empresas e as quatro opções iniciais de postagem estão em src/con
 ## Desempenho
 
 Execute node scripts/static-preview.mjs após a exportação para conferir a versão de produção. A prévia usa gzip como a hospedagem. Execute node scripts/performance-audit.mjs para gerar os relatórios HTML e JSON em test-results/performance, usando os perfis padrão de celular e desktop do Lighthouse. SITE_URL define o endereço e AUDIT_LABEL identifica a execução. As cenas inferiores carregam perto da tela; a caixa inicial só renderiza durante interação ou mudança de tamanho. Fontes são locais e a animação de rolagem usa IntersectionObserver. O endereço /boxline foi mantido para preservar o link publicado.
+
+## HostGator
+
+Para exportar para a raiz de boxlyne.com.br no PowerShell: `$env:GITHUB_PAGES="false"; $env:STATIC_EXPORT="true"; npm run build`. Envie o conteúdo de `out` para a pasta do domínio, após backup. GitHub Pages continua usando GITHUB_PAGES=true.

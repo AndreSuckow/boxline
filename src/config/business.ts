@@ -1,8 +1,6 @@
 export const business = {
   name: "BoxLyne",
   tagline: "Engenharia de embalagem",
-  // Substitua estes dados demonstrativos antes de publicar.
-  demo: true,
   whatsapp: "5541998206552",
   phone: "(41) 99820-6552",
   email: "andre@boxlyne.com.br",
@@ -14,37 +12,31 @@ export const business = {
   stats: [
     { value: 80, prefix: "+", suffix: "", label: "modelos de caixas" },
     { value: 100, prefix: "", suffix: "%", label: "projetos sob medida" },
-    { value: 5000, prefix: "+", suffix: "", label: "caixas produzidas" },
+    { value: 100000, prefix: "+", suffix: "", label: "caixas produzidas" },
     { value: 24, prefix: "", suffix: "h", label: "para conversar com vendas" },
   ],
-  companies: [
-    "Empresa A",
-    "Empresa B",
-    "Empresa C",
-    "Empresa D",
-    "Empresa E",
-    "Empresa F",
-  ],
+  // C x L x A em cm, convertidos da referência em mm fornecida pelo cliente.
+  // Limites PAC/SEDEX: https://www2.correios.com.br/sistemas/precosprazos/Formato.cfm
   postalSizes: [
     {
-      name: "Compacta",
-      size: [16, 12, 7],
-      description: "Para pequenos produtos e acessórios.",
+      name: "Modelo 02",
+      size: [22, 14, 4],
+      description: "Formato raso para itens de pouca altura.",
     },
     {
-      name: "Essencial",
-      size: [20, 15, 10],
-      description: "Para cosméticos e kits compactos.",
+      name: "Modelo 04",
+      size: [18, 11.5, 5],
+      description: "Formato estreito para pequenos itens.",
     },
     {
-      name: "Versátil",
-      size: [30, 20, 15],
-      description: "Para livros, roupas e pedidos do dia a dia.",
+      name: "Modelo 01",
+      size: [22.5, 19, 6],
+      description: "Formato baixo com base mais larga.",
     },
     {
-      name: "Ampla",
-      size: [40, 30, 20],
-      description: "Para conjuntos e produtos maiores.",
+      name: "Modelo 03",
+      size: [17, 12.5, 7.5],
+      description: "Formato compacto com mais altura.",
     },
   ],
   products: [

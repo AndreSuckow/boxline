@@ -3,7 +3,7 @@ import { readFile, stat } from "node:fs/promises";
 import { resolve, sep, extname } from "node:path";
 import { gzipSync } from "node:zlib";
 const root = resolve("out");
-const base = "/boxline";
+const base = (process.env.PREVIEW_BASE_PATH ?? "/boxline").replace(/\/$/, "");
 const types = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -63,6 +63,7 @@ createServer(async (req, res) => {
   console.log(
     "Static preview: http://127.0.0.1:" +
       (process.env.PREVIEW_PORT || 3001) +
-      "/boxline/",
+      base +
+      "/",
   ),
 );
