@@ -5,7 +5,7 @@ export const business = {
   demo: true,
   whatsapp: "5541998206552",
   phone: "(41) 99820-6552",
-  email: "vendas@boxlyne.example",
+  email: "andre@boxlyne.com.br",
   address: "Curitiba, Campo Largo e regiões metropolitanas próximas",
   hours: "Segunda a sexta, das 8h às 18h",
   response: "Resposta comercial em até 24h úteis",

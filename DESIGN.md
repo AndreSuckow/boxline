@@ -83,3 +83,5 @@ Textura kraft pré-calculada em WebP sem perdas, preservando o ruído original. 
 ## Marca e cobertura comercial
 
 Grafia oficial: BoxLyne. O símbolo geométrico e o wordmark são SVG responsivos; manter a versão vetorial como fonte principal. Atendimento atual limitado a Curitiba, Campo Largo e regiões metropolitanas próximas. Não declarar cobertura nacional.
+
+As tampas giram pelas dobras nas bordas das paredes. O enquadramento do corte estrutural inclui a projeção da sombra no chão. As explicações aparecem em ordem 01, 02 e 03 conforme a rolagem. O título da seção seguinte digita somente enquanto visível, com pausa de um segundo após a primeira frase, mantendo o espaço do texto completo e leitura acessível; movimento reduzido exibe o texto imediatamente.

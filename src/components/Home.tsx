@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import ViewportScene from "./ViewportScene";
 import BrandLogo from "./BrandLogo";
+import EngineeringHeading from "./EngineeringHeading";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -564,12 +565,7 @@ export default function Home() {
       <section className="precision section">
         <div className="precision-intro reveal">
           <p className="eyebrow">CADA DETALHE TEM UM PROPÓSITO</p>
-          <h2>
-            Não é apenas papelão.
-            <br />É engenharia
-            <br />
-            <span>de embalagem.</span>
-          </h2>
+          <EngineeringHeading />
           <p>
             Material, medidas e formato precisam trabalhar juntos. Desenvolvemos
             a caixa a partir do que ela precisa proteger.

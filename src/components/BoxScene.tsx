@@ -86,10 +86,15 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
       part(3.2, 1.8, 0.055, 0, 0.1, -1.225);
       part(0.055, 1.8, 2.45, -1.6, 0.1, 0);
       part(0.055, 1.8, 2.45, 1.6, 0.1, 0);
-      part(3.2, 0.045, 1.1, 0, 1.12, 1.73).rotation.x = 0.38;
-      part(3.2, 0.045, 1.1, 0, 1.12, -1.73).rotation.x = -0.38;
-      part(1.25, 0.045, 2.4, -2.11, 1.3, 0).rotation.z = -0.5;
-      part(1.25, 0.045, 2.4, 2.11, 1.3, 0).rotation.z = 0.5;
+      // Translate geometry away from the fold so rotation preserves the joint.
+      for (const side of [-1, 1]) {
+        const endFlap = part(3.2, 0.045, 1.1, 0, 1, side * 1.225);
+        endFlap.geometry.translate(0, 0, side * 0.55);
+        endFlap.rotation.x = side * 0.38;
+        const sideFlap = part(1.25, 0.045, 2.4, side * 1.6, 1, 0);
+        sideFlap.geometry.translate(side * 0.625, 0, 0);
+        sideFlap.rotation.z = side * 0.5;
+      }
       const labelCanvas = document.createElement("canvas");
       labelCanvas.width = 1024;
       labelCanvas.height = 512;
@@ -224,6 +229,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
     const descriptions = grid?.querySelector<HTMLElement>(
       ".layer-descriptions",
     );
+    const layers = descriptions?.querySelectorAll<HTMLElement>(".layer");
     el.addEventListener("pointerdown", down);
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerup", release);
@@ -288,7 +294,7 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
         };
         const tilt = ease((p - 0.08) / 0.42);
         const separation = ease((p - 0.2) / 0.45);
-        const reveal = ease((p - 0.72) / 0.2);
+        const reveal = ease((p - 0.65) / 0.15);
         pieces[0].position.y = 0.165 + separation * 1.05;
         pieces[1].position.y = -0.165 - separation * 1.05;
         group.rotation.set(0, -0.12 * tilt, 0);
@@ -297,6 +303,19 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
         camera.lookAt(0, 0, 0);
         camera.updateMatrixWorld();
         const bounds = new THREE.Box3().setFromObject(group);
+        // Include the directional light's floor projection, not only the material.
+        const materialBounds = bounds.clone();
+        const lightDirection = light.position.clone().normalize();
+        for (const x of [materialBounds.min.x, materialBounds.max.x])
+          for (const y of [materialBounds.min.y, materialBounds.max.y])
+            for (const z of [materialBounds.min.z, materialBounds.max.z]) {
+              const shadow = new THREE.Vector3(x, y, z);
+              shadow.addScaledVector(
+                lightDirection,
+                -(y - floor.position.y) / lightDirection.y,
+              );
+              bounds.expandByPoint(shadow);
+            }
         const outward = camera.position.clone().normalize();
         const right = new THREE.Vector3(1, 0, 0).applyQuaternion(
           camera.quaternion,
@@ -328,6 +347,11 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
         }
         if (descriptions)
           descriptions.style.visibility = reveal > 0 ? "visible" : "hidden";
+        layers?.forEach((layer, index) => {
+          const progress = ease((p - (0.75 + index * 0.08)) / 0.07);
+          layer.style.opacity = String(progress);
+          layer.style.transform = `translateY(${(1 - progress) * 18}px)`;
+        });
       }
       renderer.render(scene, camera);
     }
@@ -367,6 +391,10 @@ export default function BoxScene({ exploded = false }: { exploded?: boolean }) {
       el.removeEventListener("keydown", key);
       grid?.style.removeProperty("--explanation");
       if (descriptions) descriptions.style.removeProperty("visibility");
+      layers?.forEach((layer) => {
+        layer.style.removeProperty("opacity");
+        layer.style.removeProperty("transform");
+      });
       const materials = new Set<THREE.Material>();
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh) {
