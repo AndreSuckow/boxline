@@ -19,22 +19,22 @@ export const business = {
   // Limites PAC/SEDEX: https://www2.correios.com.br/sistemas/precosprazos/Formato.cfm
   postalSizes: [
     {
-      name: "Modelo 02",
+      name: "Modelo 01",
       size: [22, 14, 4],
       description: "Formato raso para itens de pouca altura.",
     },
     {
-      name: "Modelo 04",
+      name: "Modelo 02",
       size: [18, 11.5, 5],
       description: "Formato estreito para pequenos itens.",
     },
     {
-      name: "Modelo 01",
+      name: "Modelo 03",
       size: [22.5, 19, 6],
       description: "Formato baixo com base mais larga.",
     },
     {
-      name: "Modelo 03",
+      name: "Modelo 04",
       size: [17, 12.5, 7.5],
       description: "Formato compacto com mais altura.",
     },
